@@ -12,25 +12,30 @@
         <nuxt-link to="/hotel">酒店</nuxt-link>
         <nuxt-link to="/air">国内机票</nuxt-link>
       </el-row>
-      <el-dropdown v-if="false">
-        <el-row type="flex" align="middle" class="el-dropdown-link">
-          <nuxt-link to="#">
-            <img src="http://157.122.54.189:9093/images/pic_sea.jpeg" />
-            用户名
-          </nuxt-link>
-          <i class="el-icon-caret-bottom el-icon--right"></i>
-        </el-row>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
-            <nuxt-link to="#">个人中心</nuxt-link>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            <div @click="handleLogout">退出</div>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-
-      <nuxt-link to="/login" v-else class="account-link">登录/注册</nuxt-link>
+      <div v-if="$store.state.user.userInfo.token">
+        <el-dropdown>
+          <el-row type="flex" align="middle" class="el-dropdown-link">
+            <nuxt-link to="#">
+              <img
+                :src="`${$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar}`"
+              />
+              {{$store.state.user.userInfo.user.nickname}}
+            </nuxt-link>
+            <i class="el-icon-caret-bottom el-icon--right"></i>
+          </el-row>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <nuxt-link to="#">个人中心</nuxt-link>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <div @click="handleLogout">退出</div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <div v-else>
+        <nuxt-link to="/user/login" class="account-link">登录/注册</nuxt-link>
+      </div>
     </el-row>
   </header>
 </template>
@@ -40,7 +45,13 @@ export default {
     return {};
   },
   methods: {
-    handleLogout() {}
+    handleLogout() {
+      this.$router.push("user/login");
+      this.$store.commit("user/clearUserInfo");
+    }
+  },
+  mounted() {
+   
   }
 };
 </script>

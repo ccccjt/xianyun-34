@@ -72,7 +72,7 @@ export default {
     }).then(res => {
       console.log(res);
       this.banners = res.data.data;
-    }),
+    }).catch(err=>{console.log(err);})
       console.log(this.$axios.defaults);
   }
 };
