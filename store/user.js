@@ -3,8 +3,7 @@
 export const state = ()=>{
  return {
      userInfo:{
-        token: "",
-        user: {}
+
      }
 };
 }

@@ -1,17 +1,19 @@
 <template>
     <el-form 
-        :model="form" 
+        :model="registerform" 
         ref="form" 
         :rules="rules" 
         class="form">
-            <el-form-item class="form-item">
+            <el-form-item class="form-item" prop='username'>
                 <el-input 
-                placeholder="用户名手机">
+                v-model="registerform.username"
+                placeholder="手机号">
                 </el-input>
             </el-form-item>
 
-            <el-form-item class="form-item">
+            <el-form-item class="form-item"  prop='captcha'>
                 <el-input 
+                v-model="registerform.captcha"
                 placeholder="验证码" >
                     <template slot="append">
                         <el-button @click="handleSendCaptcha">
@@ -21,21 +23,24 @@
                 </el-input>
             </el-form-item>
 
-            <el-form-item class="form-item">
+            <el-form-item class="form-item" prop='nickname'>
                 <el-input 
+                v-model="registerform.nickname"
                 placeholder="你的名字">
                 </el-input>
             </el-form-item>
 
-            <el-form-item class="form-item">
+            <el-form-item class="form-item" prop='password'>
                 <el-input 
+                v-model="registerform.password"
                 placeholder="密码" 
                 type="password"
                 ></el-input>
             </el-form-item>
 
-            <el-form-item class="form-item">
+            <el-form-item class="form-item" prop='checkpassword'>
                 <el-input 
+                v-model="registerform.checkpassword"
                 placeholder="确认密码" 
                 type="password">
                 </el-input>
@@ -53,23 +58,73 @@
 <script>
 export default {
     data(){
+       var validatePass = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.registerform.password) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      };
         return {
             // 表单数据
-            form: {},
+            registerform: {
+                username:'',
+                nickname:'',
+                captcha:'',
+                password:'',
+                checkpassword:''
+            },
             // 表单规则
-            rules: {},
+            rules: {
+                username:[
+                    { required: true, message: "请输入手机号", trigger: "blur"},
+                    { pattern: /^1[3456789]\d{9}$/, message: "手机格式错误请确认", trigger: "blur" }
+                ],
+                captcha:[
+                    { required: true, message: "请输入验证码", trigger: "blur" }
+                ],
+                nickname:[
+                    { required: true, message: "名字不能为空", trigger: "blur" }
+                ],
+                password:[
+                    { required: true, message: "密码不能为空", trigger: "blur" }
+                ],
+                checkpassword:[
+                    { validator:validatePass , trigger: 'blur' }
+                ]
+            },
         }
     },
     methods: {
         // 发送验证码
         handleSendCaptcha(){
-
+            this.$axios({
+                url:'/captchas',
+                method:'POST',
+                data:{tel:this.registerform.username}
+            }).then(res=>{
+                console.log(res);
+            })
         },
 
 
         // 注册
         handleRegSubmit(){
-           console.log(this.form)
+           const {checkpassword,...abc} =this.registerform
+            this.$axios({
+                url:'/accounts/register',
+                method:'POST',
+                data:abc
+            }).then(res=>{
+                console.log(res);
+                this.$store.commit('user/setUserInfo',res.data)
+                this.$router.push('/')
+            }).catch(err=>{
+                console.log(err);
+                })
+           console.log(this.registerform)
         }
     }
 }

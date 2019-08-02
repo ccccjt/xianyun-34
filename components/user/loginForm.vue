@@ -28,12 +28,12 @@ export default {
       // 表单规则
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          { pattern: /^1[3456789]\d{9}$/, message: "手机格式错误请确认", trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 3, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { min: 3, message: "密码长度不足请检查", trigger: "blur" }
         ]
       }
     };
