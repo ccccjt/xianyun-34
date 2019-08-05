@@ -70,7 +70,7 @@ export default {
         destCity: "",
         destCode: "",
         departDate: ""
-      }
+      },
     };
   },
   methods: {
@@ -92,7 +92,7 @@ export default {
           item.value = item.name;
         });
         cb(res.data.data);
-        this.departCode = res.data.data[0].sort;
+        this.searchForm.departCode = res.data.data[0].sort;
       });
     },
 
@@ -111,45 +111,50 @@ export default {
           item.value = item.name;
         });
         cb(res.data.data);
-        this.departCode = res.data.data[0].sort;
+        this.searchForm.destCode = res.data.data[0].sort;
       });
     },
 
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
-      this.departCode = item.sort;
+      // console.log(item);
+      this.searchForm.departCode = item.sort;
     },
 
     // 目标城市下拉选择时触发
     handleDestSelect(item) {
-      this.destCode = item.sort;
+      this.searchForm.destCode = item.sort;
     },
 
     // 确认选择日期时触发
     handleDate(value) {
       // console.log(moment(value).format('YYYY-MM-DD'));
-      this.departDate = moment(value).format("YYYY-MM-DD");
+      this.searchForm.departDate = moment(value).format("YYYY-MM-DD");
     },
 
-    // 触发和目标城市切换时触发
+    // 出发和目标城市切换时触发
     handleReverse() {
       const { departCode, destCode, departCity, destCity } = this.searchForm;
-      this.departCity = destCity;
-      this.destCity = departCity;
-      this.departCode = departCode;
-      this.destCode = departCode;
+      this.searchForm.departCity = destCity;
+      this.searchForm.destCity = departCity;
+      this.searchForm.departCode = destCode;
+      this.searchForm.destCode = departCode;
     },
 
     // 提交表单是触发
     handleSubmit() {
+            console.log(this.searchForm);
+      if(this.searchForm.departCity==''||this.searchForm.destCity==''||this.searchForm.departCode==''||this.searchForm.destCode==''){
+        return
+      }
       this.$router.push({
-        url: "/air/flights",
+        path: "/air/flights",
         query: this.searchForm
       });
     }
   },
   mounted() {
-      
+     this.searchForm.departDate=moment(new Date()).format("YYYY-MM-DD")
   }
 };
 </script>
