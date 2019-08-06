@@ -14,7 +14,7 @@
               <span>{{data.org_airport_name+data.org_airport_quay}}</span>
             </el-col>
             <el-col :span="8" class="flight-time">
-              <span>2时20分</span>
+              <span>{{rankTime}}</span>
             </el-col>
             <el-col :span="8" class="flight-airport">
               <strong>{{data.arr_time}}</strong>
@@ -47,7 +47,7 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.settle_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" size="mini" :data="data" @click="chose(data.id,item.seat_xid)">选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -72,6 +72,45 @@ export default {
     return {
       isShow: false
     };
+  },
+  computed: {
+    // 计算出相差时间
+    rankTime() {
+      // 转化为分钟
+      const dep = this.data.dep_time.split(":");
+      const arr = this.data.arr_time.split(":");
+      const depVal = dep[0] * 60 + +dep[1];
+      const arrVal = arr[0] * 60 + +arr[1];
+
+      // 到达时间相减得到分钟
+      let dis = arrVal - depVal;
+
+      // 如果是第二天凌晨时间段，需要加24小时
+      if (dis < 0) {
+        dis = arrVal + 24 * 60 - depVal;
+      }
+
+      // 得到相差时间
+      return `${Math.floor(dis / 60)}时${dis % 60}分`;
+    }
+  },
+  methods: {
+    chose(id,seat_xid) {
+      console.log(this.$store.state);
+      if(!this.$store.state.user.userInfo.token){
+        this.$message({
+          type:'warning',
+          message:'请在登录后选定'
+        })
+        return this.$router.push('/user/login')
+      }
+      this.$router.push({
+         path:'/air/order',
+         query: {
+           id,seat_xid
+         }
+      })
+    }
   }
 };
 </script>

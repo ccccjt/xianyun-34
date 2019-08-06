@@ -141,12 +141,13 @@ export default {
       this.searchForm.destCode = departCode;
     },
 
-    // 提交表单是触发
+    // 提交表单时触发
     handleSubmit() {
             console.log(this.searchForm);
       if(this.searchForm.departCity==''||this.searchForm.destCity==''||this.searchForm.departCode==''||this.searchForm.destCode==''){
         return
       }
+      this.$store.commit('air/setSearchHistory',this.searchForm)
       this.$router.push({
         path: "/air/flights",
         query: this.searchForm

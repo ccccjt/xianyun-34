@@ -5,7 +5,7 @@
       <div class="flights-content">
         <!-- 过滤条件 -->
         <div>
-          <FlightsFilters :flightsList="flightsListData"/>
+          <FlightsFilters :flightsList="flightsListData" @screen="screen" />
         </div>
 
         <!-- 航班头部布局 -->
@@ -37,7 +37,7 @@
 
       <!-- 侧边栏 -->
       <div class="aside">
-        <!-- 侧边栏组件 -->
+        <FlightsAside/>
       </div>
     </el-row>
   </section>
@@ -47,17 +47,23 @@
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
 import FlightsFilters from "@/components/air/flightsFilters";
+import FlightsAside from "@/components/air/flightsAside";
 
 export default {
   components: {
     FlightsListHead,
     FlightsItem,
-    FlightsFilters
+    FlightsFilters,
+    FlightsAside
+
   },
   data() {
     return {
       flightsList: [],
-      flightsListData:{},
+      flightsListData:{
+        info:{},
+        options:{}
+      },
       currentFlightsList: [],
       total: 0,
       pagenum: 1,
@@ -65,11 +71,46 @@ export default {
     };
   },
   methods: {
-    init() {
+    init(arr) {
+      if(arr){
+       this.flightsList=arr
+       this.pagenum=1
+      }
       this.currentFlightsList = this.flightsList.slice(
         (this.pagenum - 1) * this.pagesize,
         this.pagenum * this.pagesize
       );
+    },
+    screen(screenairpost,screendeptime,screencompany,screenairsize){
+      // this.currentFlightsList
+      // console.log(screenairpost);
+      // console.log(screendeptime);
+      // console.log(screencompany);
+      // console.log(screenairsize);
+      var arr=[...this.flightsListData.flights]
+      if(screenairpost){
+        arr=arr.filter(v=>{
+        return v.org_airport_name==screenairpost  
+      })
+      }
+      if(screendeptime){
+        arr=arr.filter(v=>{
+        return (screendeptime-6)<=(v.dep_time[0]+v.dep_time[1]) && (v.dep_time[0]+v.dep_time[1])<screendeptime 
+      })
+      }
+      if(screencompany){
+        arr=arr.filter(v=>{
+        return v.airline_name==screencompany  
+      })
+      }
+      if(screenairsize){
+        arr=arr.filter(v=>{
+        return v.plane_size==screenairsize 
+      })
+      }
+      // console.log(arr);
+      this.total=arr.length
+      this.init(arr)
     },
     handleSizeChange(val) {
       //   console.log("SizeChange" + val);
@@ -88,12 +129,26 @@ export default {
       url: "/airs",
       params: this.$route.query
     }).then(res => {
-      console.log(res);
-      this.flightsList = res.data.flights;
-      this.flightsListData=res.data
+      // console.log(res);
+      this.flightsList = [...res.data.flights];
+      this.flightsListData={...res.data}
       this.total = this.flightsList.length;
       this.init();
     });
+  },
+  watch: {
+    $route(){
+      this.$axios({
+        url: "/airs",
+      params: this.$route.query
+    }).then(res => {
+      console.log(res);
+      this.flightsList = [...res.data.flights];
+      this.flightsListData={...res.data}
+      this.total = this.flightsList.length;
+      this.init();
+    });
+    }
   }
 };
 </script>

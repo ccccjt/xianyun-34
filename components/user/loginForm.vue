@@ -52,7 +52,9 @@ export default {
               console.log(res);
               this.$store.commit('user/setUserInfo',res.data);
                 console.log(this.$store.state);
-                this.$router.push('/')
+                // this.$router.push('/')
+                // 返回上一页
+                this.$router.back();
             })
             .catch(err => {
               console.log(res);

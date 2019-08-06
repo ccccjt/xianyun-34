@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     handleLogout() {
-      this.$router.push("user/login");
+      this.$router.push("/user/login");
       this.$store.commit("user/clearUserInfo");
     }
   },
